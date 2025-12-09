@@ -1,0 +1,35 @@
+%start PhoneLineFSM::Idle
+%header PhoneLine.h
+%class PhoneLine
+
+%map PhoneLineFSM
+%%
+Idle
+{
+	offHook	Ready	{soundDialTone();}
+}
+
+Conversation
+{
+	validNumber	Conversation	{continues();}
+	invalidNumber	Conversation	{continues();}
+	onHook	Idle	{disconnectedLine();}
+}
+
+Warning
+{
+	validNumber	Warning	{slowBusyTone();}
+	onHook	Idle	{disconnectedLine();}
+	invalidNumber	Warning	{slowBusyTone();}	
+}
+
+Ready
+Entry {startTimer();}
+Exit {stopTimer();}
+{
+	onHook	Idle {disconnectedLine();}
+	invalidNumber	Warning	{PlayMessage();}
+	validNumber	Conversation	{findConnection();}
+}
+
+%%
